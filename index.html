@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TPS Area & Volume Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Raleway:wght@600&family=Orbitron:wght@600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --dark-bg: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      --light-bg: linear-gradient(to right, #f5f7fa, #c3cfe2);
+      --dark-text: white;
+      --light-text: black;
+      --primary: cyan;
+    }
+
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+
+    body {
+      background: var(--dark-bg);
+      color: var(--dark-text);
+      font-family: 'Raleway', sans-serif;
+      border: 8px ridge var(--primary);
+      overflow-x: hidden;
+    }
+
+    body.light-mode {
+      background: var(--light-bg);
+      color: var(--light-text);
+      border-color: #0077cc;
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem;
+      font-size: 2rem;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: bold;
+      animation: fadeInDown 1.2s ease-in-out;
+      border-bottom: 2px solid var(--primary);
+      text-shadow: 0 0 15px var(--primary);
+    }
+
+    .toggle-mode {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 0.7rem 1.2rem;
+      border-radius: 25px;
+      background: var(--primary);
+      color: black;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      z-index: 10;
+      box-shadow: 0 0 10px var(--primary);
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+      animation: slideUp 1.5s ease-in-out;
+      position: relative;
+      z-index: 1;
+      border: 2px solid #00f0ff;
+    }
+
+    label, select, input {
+      display: block;
+      width: 100%;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    input, select {
+      padding: 0.5rem;
+      border-radius: 10px;
+      border: none;
+    }
+
+    button {
+      padding: 0.7rem 1.5rem;
+      font-size: 1rem;
+      background: #00c6ff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      font-weight: bold;
+      margin: 5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    button i {
+      animation: bounce 1.2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    button:hover {
+      background: #0072ff;
+      box-shadow: 0 0 15px #00c6ff;
+    }
+
+    #result {
+      margin-top: 1.5rem;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #ffeb3b;
+      animation: fadeIn 1s ease-in;
+      text-shadow: 0 0 10px #ffeb3b;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    .boy {
+      width: 140px;
+      margin: auto;
+      display: block;
+      animation: floatBoy 3s ease-in-out infinite;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes floatBoy {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(100px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .snowflake {
+      position: fixed;
+      top: -10px;
+      color: white;
+      font-size: 1em;
+      animation: fall linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body onload="createSnowflakes();">
+  <button class="toggle-mode" onclick="toggleMode()"><i class="fas fa-moon"></i> Toggle</button>
+  <header><u>TPS Area & Volume Calculator</u></header>
+  <img src="https://cdn-icons-png.flaticon.com/512/5231/5231019.png" alt="Boy Icon" class="boy" />
+  <div class="container">
+    <label for="type">What type of shape?</label>
+    <select id="type" onchange="updateShapeOptions()">
+      <option value="">-- Select --</option>
+      <option value="2d">2D</option>
+      <option value="3d">3D</option>
+    </select>
+    <div id="shape-container"></div>
+    <div id="figure"></div>
+    <div id="dimension-container"></div>
+    <button onclick="calculate()"><i class="fas fa-equals"></i> Calculate</button>
+    <button onclick="resetForm()"><i class="fas fa-rotate"></i> Reset</button>
+    <button onclick="alert('Formulas:\nSquare = a²\nRectangle = l×b\nCircle = πr²\nCube = a³\nCuboid = l×b×h\nSphere = 4/3×π×r³')">
+      <i class="fas fa-circle-info"></i> Info
+    </button>
+    <div id="result"></div>
+  </div>
+  <footer>
+    Made with ❤️ by Garv, Kartik, Ishmas & Ajitesh<br>Designed by ChatGPT
+  </footer>
+  <script>
+    const shapes = {
+      '2d': ['Square', 'Rectangle', 'Circle'],
+      '3d': ['Cube', 'Cuboid', 'Sphere']
+    };
+    function updateShapeOptions() {
+      const type = document.getElementById('type').value;
+      const shapeContainer = document.getElementById('shape-container');
+      shapeContainer.innerHTML = '';
+      if (type) {
+        const label = document.createElement('label');
+        label.textContent = `Choose a ${type.toUpperCase()} shape:`;
+        shapeContainer.appendChild(label);
+        const select = document.createElement('select');
+        select.id = 'shape';
+        shapes[type].forEach(shape => {
+          const option = document.createElement('option');
+          option.value = shape.toLowerCase();
+          option.textContent = shape;
+          select.appendChild(option);
+        });
+        select.onchange = () => createInputs();
+        shapeContainer.appendChild(select);
+      }
+      document.getElementById('dimension-container').innerHTML = '';
+      document.getElementById('result').innerHTML = '';
+      document.getElementById('figure').innerHTML = '';
+    }
+    function createInputs() {
+      const shape = document.getElementById('shape').value;
+      const container = document.getElementById('dimension-container');
+      container.innerHTML = '';
+      let inputs = [];
+      switch (shape) {
+        case 'square': inputs = ['Side']; break;
+        case 'rectangle': inputs = ['Length', 'Breadth']; break;
+        case 'circle': inputs = ['Radius']; break;
+        case 'cube': inputs = ['Side']; break;
+        case 'cuboid': inputs = ['Length', 'Breadth', 'Height']; break;
+        case 'sphere': inputs = ['Radius']; break;
+      }
+      inputs.forEach(dim => {
+        const label = document.createElement('label');
+        label.textContent = dim + ':';
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.id = dim.toLowerCase();
+        container.appendChild(label);
+        container.appendChild(input);
+      });
+    }
+    function calculate() {
+      const shape = document.getElementById('shape')?.value;
+      let result = '';
+      if (!shape) return;
+      switch (shape) {
+        case 'square':
+          let s = +document.getElementById('side').value;
+          result = `Area = ${s * s} units²`;
+          break;
+        case 'rectangle':
+          let l = +document.getElementById('length').value;
+          let b = +document.getElementById('breadth').value;
+          result = `Area = ${l * b} units²`;
+          break;
+        case 'circle':
+          let r = +document.getElementById('radius').value;
+          result = `Area = ${(Math.PI * r * r).toFixed(2)} units²`;
+          break;
+        case 'cube':
+          let sc = +document.getElementById('side').value;
+          result = `Volume = ${Math.pow(sc, 3)} units³`;
+          break;
+        case 'cuboid':
+          let l1 = +document.getElementById('length').value;
+          let b1 = +document.getElementById('breadth').value;
+          let h1 = +document.getElementById('height').value;
+          result = `Volume = ${l1 * b1 * h1} units³`;
+          break;
+        case 'sphere':
+          let rs = +document.getElementById('radius').value;
+          result = `Volume = ${(4 / 3 * Math.PI * Math.pow(rs, 3)).toFixed(2)} units³`;
+          break;
+      }
+      document.getElementById('result').textContent = result;
+      const utter = new SpeechSynthesisUtterance(result);
+      utter.rate = 0.9;
+      speechSynthesis.speak(utter);
+    }
+    function resetForm() {
+      document.getElementById('type').value = '';
+      document.getElementById('shape-container').innerHTML = '';
+      document.getElementById('dimension-container').innerHTML = '';
+      document.getElementById('result').innerHTML = '';
+    }
+    function toggleMode() {
+      document.body.classList.toggle('light-mode');
+    }
+    function createSnowflakes() {
+      const count = 70;
+      for (let i = 0; i < count; i++) {
+        let snow = document.createElement("div");
+        snow.className = "snowflake";
+        snow.style.left = Math.random() * 100 + "vw";
+        snow.style.animationDuration = (2 + Math.random() * 3) + "s";
+        snow.style.fontSize = (12 + Math.random() * 18) + "px";
+        snow.textContent = "❄";
+        document.body.appendChild(snow);
+      }
+    }
+  </script>
+</body>
+</html>
