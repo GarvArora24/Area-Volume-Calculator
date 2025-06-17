@@ -9,9 +9,9 @@
   <style>
     :root {
       --dark-bg: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      --light-bg: linear-gradient(to right, #f5f7fa, #c3cfe2);
+      --light-bg: linear-gradient(to right, #e0f7fa, #fffde7);
       --dark-text: white;
-      --light-text: black;
+      --light-text: #222;
       --primary: cyan;
     }
 
@@ -74,6 +74,11 @@
       border: 2px solid #00f0ff;
     }
 
+    body.light-mode .container {
+      background: rgba(255, 255, 255, 0.7);
+      box-shadow: 0 0 20px rgba(0, 100, 255, 0.2);
+    }
+
     label, select, input {
       display: block;
       width: 100%;
@@ -105,11 +110,6 @@
 
     button i {
       animation: bounce 1.2s infinite;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
     }
 
     button:hover {
@@ -194,18 +194,18 @@
     <div id="dimension-container"></div>
     <button onclick="calculate()"><i class="fas fa-equals"></i> Calculate</button>
     <button onclick="resetForm()"><i class="fas fa-rotate"></i> Reset</button>
-    <button onclick="alert('Formulas:\nSquare = a²\nRectangle = l×b\nCircle = πr²\nCube = a³\nCuboid = l×b×h\nSphere = 4/3×π×r³')">
+    <button onclick="alert('Formulas:\nSquare = a²\nRectangle = l×b\nCircle = πr²\nTriangle = ½×b×h\nCube = a³\nCuboid = l×b×h\nSphere = 4/3×π×r³\nCylinder = πr²h')">
       <i class="fas fa-circle-info"></i> Info
     </button>
     <div id="result"></div>
   </div>
   <footer>
-    Made with ❤️ by Garv, Kartik, Ishmas & Ajitesh<br>Designed by ChatGPT
+    Made with ❤️ by Garv, Kartik, Ishmas, Ajitesh & Reyansh<br>Designed by ChatGPT
   </footer>
   <script>
     const shapes = {
-      '2d': ['Square', 'Rectangle', 'Circle'],
-      '3d': ['Cube', 'Cuboid', 'Sphere']
+      '2d': ['Square', 'Rectangle', 'Circle', 'Triangle'],
+      '3d': ['Cube', 'Cuboid', 'Sphere', 'Cylinder']
     };
     function updateShapeOptions() {
       const type = document.getElementById('type').value;
@@ -239,9 +239,11 @@
         case 'square': inputs = ['Side']; break;
         case 'rectangle': inputs = ['Length', 'Breadth']; break;
         case 'circle': inputs = ['Radius']; break;
+        case 'triangle': inputs = ['Base', 'Height']; break;
         case 'cube': inputs = ['Side']; break;
         case 'cuboid': inputs = ['Length', 'Breadth', 'Height']; break;
         case 'sphere': inputs = ['Radius']; break;
+        case 'cylinder': inputs = ['Radius', 'Height']; break;
       }
       inputs.forEach(dim => {
         const label = document.createElement('label');
@@ -271,6 +273,11 @@
           let r = +document.getElementById('radius').value;
           result = `Area = ${(Math.PI * r * r).toFixed(2)} units²`;
           break;
+        case 'triangle':
+          let base = +document.getElementById('base').value;
+          let height = +document.getElementById('height').value;
+          result = `Area = ${0.5 * base * height} units²`;
+          break;
         case 'cube':
           let sc = +document.getElementById('side').value;
           result = `Volume = ${Math.pow(sc, 3)} units³`;
@@ -284,6 +291,11 @@
         case 'sphere':
           let rs = +document.getElementById('radius').value;
           result = `Volume = ${(4 / 3 * Math.PI * Math.pow(rs, 3)).toFixed(2)} units³`;
+          break;
+        case 'cylinder':
+          let rc = +document.getElementById('radius').value;
+          let hc = +document.getElementById('height').value;
+          result = `Volume = ${(Math.PI * rc * rc * hc).toFixed(2)} units³`;
           break;
       }
       document.getElementById('result').textContent = result;
